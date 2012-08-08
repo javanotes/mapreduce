@@ -49,7 +49,7 @@ public class Slave extends JVMComponent {
 						System.exit(0);
 						
 					}
-				}), component);
+				}), componentName);
 								
 
 		

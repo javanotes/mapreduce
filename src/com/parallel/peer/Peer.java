@@ -6,6 +6,7 @@ import com.sun.enterprise.ee.cms.core.GroupManagementService;
 import com.sun.enterprise.ee.cms.core.Signal;
 import com.sun.enterprise.ee.cms.impl.client.FailureNotificationActionFactoryImpl;
 import com.sun.enterprise.ee.cms.impl.client.FailureSuspectedActionFactoryImpl;
+import com.sun.enterprise.ee.cms.impl.client.GroupLeadershipNotificationActionFactoryImpl;
 import com.sun.enterprise.ee.cms.impl.client.JoinNotificationActionFactoryImpl;
 import com.sun.enterprise.ee.cms.impl.client.MessageActionFactoryImpl;
 import com.sun.enterprise.ee.cms.impl.client.PlannedShutdownActionFactoryImpl;
@@ -44,8 +45,17 @@ public class Peer extends JVMComponent{
 					
 					@Override
 					public void processNotification(Signal arg0) {
-						System.out.println("JoinNotificationSignal received ...." + arg0);
+						System.out.println("JoinNotificationSignal received ...." + arg0.getMemberToken());
 						
+						
+					}
+				}));
+				
+				gms.addActionFactory(new GroupLeadershipNotificationActionFactoryImpl(new CallBack() {
+					
+					@Override
+					public void processNotification(Signal arg0) {
+						System.out.println("GroupLeadershipNotification received ...." + arg0.getMemberToken());
 						
 					}
 				}));
@@ -97,7 +107,7 @@ public class Peer extends JVMComponent{
 						System.out.println("Message notification received");
 						
 					}
-				}), component);
+				}), componentName);
 
 		
 	}

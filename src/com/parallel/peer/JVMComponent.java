@@ -16,7 +16,7 @@ import com.sun.enterprise.ee.cms.core.SignalReleaseException;
 abstract class JVMComponent implements CallBack {
 
 	protected static GroupManagementService gms = null;
-	protected static String component = null;
+	protected static String componentName = null;
 	protected static String gmsGrp = null;
 	protected static GroupManagementService.MemberType type = null;
 	
@@ -29,56 +29,47 @@ abstract class JVMComponent implements CallBack {
 	protected static boolean isMaster = false;
 	
 	protected JVMComponent(String c, String g, GroupManagementService.MemberType t){
-		component = c;
+		componentName = c;
 		gmsGrp = g;
 		type = t;
 		
 		try {
 			
+			try {
+				gms = GMSFactory.getGMSModule(gmsGrp);
+			} catch (Exception e) {
+				
+			}
 					
 			if(gms == null){
 						
-				gms = (GroupManagementService) GMSFactory.startGMSModule(component, 
+				gms = (GroupManagementService) GMSFactory.startGMSModule(componentName, 
 					gmsGrp, 
 					type, 
 					null);
+				
+				GMSFactory.setGMSEnabledState(gmsGrp, true);
 			}
 				
 			gms.join();
-			isMaster = gms.getGroupHandle().getGroupLeader().equals(component);
+			isMaster = gms.getGroupHandle().getGroupLeader().equals(componentName);
 			
 		} catch (GMSException e) {
-			System.err.println("Could not start component: " + component + ". Exiting!!");
+			System.err.println("Could not start component: " + componentName + ". Exiting!!");
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
-		registerShutdownHook();
+				
 	}
 	
-	private void registerShutdownHook(){
-		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				
-				if(gms != null){
-					if(isMaster){
-						gms.shutdown(shutdownType.GROUP_SHUTDOWN);
-						System.out.println("Percolate system stopped ...");
-					}
-					else{
-						gms.shutdown(shutdownType.INSTANCE_SHUTDOWN);
-						System.out.println("Component " + component + " stopped ...");
-					}
-				}
-				
-			}
-		}));
+	protected void systemShutdown(){
+		if(isMaster && gms != null){
+			gms.shutdown(shutdownType.GROUP_SHUTDOWN);
+		}
 	}
 	
 	private String signalKey(Signal signal){
-		return signal.getClass().getSuperclass().getCanonicalName() + gmsGrp + component;
+		return signal.getClass().getSuperclass().getCanonicalName() + gmsGrp + componentName;
 	}
 	
 	@Override
