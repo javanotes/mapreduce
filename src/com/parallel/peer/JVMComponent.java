@@ -51,7 +51,16 @@ abstract class JVMComponent implements CallBack {
 				GMSFactory.setGMSEnabledState(gmsGrp, true);
 			}
 				
+			registerListeners();
 			gms.join();
+			
+			try {
+				//allow some time to stabilise the GMS system
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+				
+			}
+			
 			isMaster = gms.getGroupHandle().getGroupLeader().equals(componentName);
 			
 		} catch (GMSException e) {
@@ -63,8 +72,11 @@ abstract class JVMComponent implements CallBack {
 	}
 	
 	protected void systemShutdown(){
-		if(isMaster && gms != null){
-			gms.shutdown(shutdownType.GROUP_SHUTDOWN);
+		if(gms != null){
+			if(isMaster)
+				gms.shutdown(shutdownType.GROUP_SHUTDOWN);
+			else
+				gms.shutdown(shutdownType.INSTANCE_SHUTDOWN);
 		}
 	}
 	

@@ -24,15 +24,16 @@ public class Peer extends JVMComponent{
 	 */
 	public static void main(String[] args) {
 		
-		Peer m = new Peer(args[0]);
-		m.registerListeners();
-				
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
+		final Peer m = new Peer(args[0]);
+		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 			
-		}
-		
+			@Override
+			public void run() {
+				m.systemShutdown();
+				System.out.println("-- shutdown hook ran --");
+			}
+		}));
+				
 		System.out.println("Peer: [" + args[0] + "] started with processId: " + processId + " as " + (isMaster ? " MASTER" : " MEMBER .."));
 				
 	}
