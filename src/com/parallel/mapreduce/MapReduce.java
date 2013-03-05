@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import akka.actor.Actor;
 import akka.actor.ActorRef;
@@ -15,9 +16,9 @@ import com.parallel.mapreduce.core.IMapper;
 import com.parallel.mapreduce.core.IReducer;
 import com.parallel.mapreduce.core.KeyValue;
 import com.parallel.mapreduce.core.actor.MasterActor;
-import com.parallel.mapreduce.core.actor.message.EndProduceMsg;
-import com.parallel.mapreduce.core.actor.message.InputCollectionMsg;
-import com.parallel.mapreduce.core.actor.message.InputDataMsg;
+import com.parallel.mapreduce.core.message.EndProduceMsg;
+import com.parallel.mapreduce.core.message.InputCollectionMsg;
+import com.parallel.mapreduce.core.message.InputDataMsg;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
@@ -46,7 +47,7 @@ import com.typesafe.config.ConfigFactory;
 
  	<p><i>ArrayOfKeyValue Map(object itemFromSourceCollection)</i>
 
-	So, we can say that Map’s responsibility is to convert an item from the source collection to zero or many instances of Key/Value objects.
+	So, we can say that Mapï¿½s responsibility is to convert an item from the source collection to zero or many instances of Key/Value objects.
 	At the next step , the algorithm will sort all Key/Value instances and it will create new object instances where all values will be grouped by Key.
 
 	The last step will executes the Reduce function by each grouped Key/Value instance.
@@ -116,7 +117,8 @@ public class MapReduce<X, K, V> {
 				"mapreduce-dispatcher.executor = fork-join-executor \n" +
 				"mapreduce-dispatcher.fork-join-executor.parallelism-min = 8 \n" +
 				"mapreduce-dispatcher.fork-join-executor.parallelism-factor = 3.0 \n" +
-				"mapreduce-dispatcher.fork-join-executor.parallelism-max = 64 "
+				"mapreduce-dispatcher.fork-join-executor.parallelism-max = 64 \n" /*+ 
+				"prio-dispatcher.mailbox-type = akka.docs.dispatcher.DispatcherDocSpec$PriorityMailBox "*/
 	);
 			
 		
@@ -155,6 +157,7 @@ public class MapReduce<X, K, V> {
 				}
 			}));
 			isAkkaInit = true;
+			startWait();
 		}
 		
 	}
@@ -194,14 +197,39 @@ public class MapReduce<X, K, V> {
 		}
 		
 	}
+	
+	private AtomicBoolean stop = new AtomicBoolean(false);
+	
+	private void startWait(){
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				while(!stop.get()){
+					System.out.print(". ");
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						
+					}
+				}
+
+				System.out.println("\nActor messaging completed ...");
+			}
+		}).start();
+	}
+	private void endWait(){
+		stop.set(true);
+	}
 				
 	public Collection<KeyValue<K, V>> getResult(){
 		masterActor.tell(new EndProduceMsg());
 		try {
 			//wait while the processing is complete
-			_akLatch.await();
 			
-			System.out.println("Actor messaging completed ...");
+			_akLatch.await();
+			endWait();
+						
 		} catch (InterruptedException e) {
 			
 		}

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project parallel">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <target name="create_run_jar">
+    	<delete file="/home/esutdal/workspace/mapreduce/jar/percolate.jar"></delete>
+        <jar destfile="/home/esutdal/workspace/mapreduce/jar/percolate.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="com.parallel.peer.Peer"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="/home/esutdal/workspace/mapreduce/bin"/>
+            <!--zipfileset excludes="META-INF/*.SF" src="/home/esutdal/workspace/mapreduce/lib/akka-actor-2.0.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/esutdal/workspace/mapreduce/lib/scala-library.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/esutdal/workspace/mapreduce/lib/spark/jetty-webapp-7.3.0.v20110203.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/esutdal/workspace/mapreduce/lib/spark/log4j-1.2.14.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/esutdal/workspace/mapreduce/lib/spark/servlet-api-3.0.pre4.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/esutdal/workspace/mapreduce/lib/spark/slf4j-api-1.6.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/esutdal/workspace/mapreduce/lib/spark/slf4j-log4j12-1.6.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/esutdal/workspace/mapreduce/lib/spark/spark-0.9.9.3-SNAPSHOT.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/esutdal/workspace/mapreduce/lib/jxta.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/home/esutdal/workspace/mapreduce/lib/shoal-gms.jar"/-->
+        </jar>
+    </target>
+</project>

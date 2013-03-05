@@ -6,8 +6,8 @@ import akka.actor.UntypedActor;
 
 import com.parallel.mapreduce.core.IMapper;
 import com.parallel.mapreduce.core.KeyValue;
-import com.parallel.mapreduce.core.actor.message.MapMsg;
-import com.parallel.mapreduce.core.actor.message.MappedMsg;
+import com.parallel.mapreduce.core.message.MapMsg;
+import com.parallel.mapreduce.core.message.MappedMsg;
 
 public class MapActor<X, K, V> extends UntypedActor {
 	

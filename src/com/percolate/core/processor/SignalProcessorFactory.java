@@ -3,8 +3,6 @@ package com.percolate.core.processor;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sun.enterprise.ee.cms.core.Signal;
-
 public class SignalProcessorFactory {
 	
 	private static final Map<String, String> processors = new HashMap<String, String>();

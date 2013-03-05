@@ -1,19 +1,17 @@
 package com.parallel.io;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.RandomAccessFile;
+import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.channels.FileLock;
-import java.util.Arrays;
-
-public class PersistentMap<K, V> {
+import java.nio.channels.FileChannel.MapMode;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+@Deprecated
+public class PersistentMap<K, V> implements java.util.Map<K, V>{
 	
 	private static String ioFolder = System.getProperty("user.home") + File.separator + "persistance" + File.separator + "maps";
 	
@@ -21,11 +19,14 @@ public class PersistentMap<K, V> {
 		File f = new File(System.getProperty("user.home") + File.separator + "persistance");
 		
 		if(f.mkdir()){
-			f = new File(System.getProperty("user.home") + File.separator + "persistance" + File.separator + "maps");
+			f = new File(ioFolder);
 			f.mkdir();
 		}
 	}
-		
+	
+	private FileChannel channel = null;
+	private MappedByteBuffer fileMap = null;
+	/*		
 	public static synchronized boolean clear(){
 		
 		File dir = new File(ioFolder);
@@ -227,9 +228,9 @@ public class PersistentMap<K, V> {
 		}
 		return value;
 		
-	}
+	}*/
 	
-	public static void main(String...strings){
+	public static void main(String...strings) throws Exception{
 		PersistentMap<Integer, String> pm = new PersistentMap<Integer, String>();
 		
 		/*pm.put(1, "one");
@@ -238,8 +239,133 @@ public class PersistentMap<K, V> {
 		pm.put(3, "three");
 		System.out.println(pm.get(1));
 		
-		PersistentMap.clear();
+		//PersistentMap.clear();
 				
+	}
+	
+	public PersistentMap()throws Exception{
+		memoryMap = new HashMap<K, V>();
+		_id = Long.toHexString(System.currentTimeMillis());
+		
+		try {
+			channel = new RandomAccessFile(ioFolder + File.separator + _id, "rw").getChannel();
+			fileMap = channel.map(MapMode.READ_WRITE, 0, Integer.MAX_VALUE);
+			//fileMap.
+		} catch (FileNotFoundException e) {
+			System.err.println(e.getMessage());
+			throw new Exception("Unable to instantiate", e);
+		} 
+		
+		Runtime.getRuntime().addShutdownHook(new Thread(){
+			@Override
+			public void run(){
+				
+			}
+		});
+		
+	}
+	
+	private static int hash(int h)
+    {
+        h ^= h >>> 20 ^ h >>> 12;
+        return h ^ h >>> 7 ^ h >>> 4;
+    }
+	
+	private static int indexFor(int h, int length)
+    {
+        return h & length - 1;
+    }
+	
+	public PersistentMap(String id)throws Exception{
+		memoryMap = new HashMap<K, V>();
+		_id = id;
+		try {
+			channel = new RandomAccessFile(ioFolder + File.separator + _id, "rw").getChannel();
+			
+		} catch (FileNotFoundException e) {
+			System.err.println(e.getMessage());
+			throw new Exception("Unable to instantiate", e);
+		} 
+		
+		Runtime.getRuntime().addShutdownHook(new Thread(){
+			@Override
+			public void run(){
+				
+			}
+		});
+	}
+	
+	public String id(){
+		return _id;
+	}
+	
+	
+	private final Map<K, V> memoryMap;
+	private final String _id;
+	
+	@Override
+	public void clear() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public boolean containsKey(Object arg0) {
+		
+		return false;
+	}
+	@Override
+	public boolean containsValue(Object arg0) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public Set<java.util.Map.Entry<K, V>> entrySet() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public boolean isEmpty() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public Set<K> keySet() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public void putAll(Map<? extends K, ? extends V> arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public int size() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public Collection<V> values() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public V get(Object arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public V put(K arg0, V arg1) {
+		// TODO Auto-generated method stub
+		arg0.hashCode();
+		return null;
+	}
+
+	@Override
+	public V remove(Object arg0) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

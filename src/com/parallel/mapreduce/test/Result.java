@@ -6,11 +6,11 @@ import java.util.Map.Entry;
 
 public class Result {
 
-	private long totalBalance = 0;
-	private int outComeSuccess = 0;
-	private int count = 0;
+	public long totalBalance = 0;
+	public int outComeSuccess = 0;
+	public int count = 0;
 	
-	private Map<String, Integer> education = new HashMap<String, Integer>();
+	public Map<String, Integer> education = new HashMap<String, Integer>();
 	
 	public long getTotalBalance() {
 		return totalBalance;
@@ -44,25 +44,7 @@ public class Result {
 		return education;
 	}
 
-	/**
-	 * The association logic
-	 * @param other
-	 */
-	public void associate(Result other){
-		if(other != null){
-			this.totalBalance += other.totalBalance;
-			this.outComeSuccess += other.outComeSuccess;
-			this.count += other.count == 0 ? 1 : other.count;
-			for(Entry<String, Integer> each : other.education.entrySet()){
-				if(education.containsKey(each.getKey())){
-					education.put(each.getKey(), education.get(each.getKey()) + each.getValue());
-				}
-				else{
-					education.put(each.getKey(), each.getValue());
-				}
-			}
-		}
-	}
+	
 	
 	
 }

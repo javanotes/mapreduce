@@ -4,8 +4,8 @@ import akka.actor.UntypedActor;
 
 import com.parallel.mapreduce.core.IReducer;
 import com.parallel.mapreduce.core.KeyValue;
-import com.parallel.mapreduce.core.actor.message.ReduceMsg;
-import com.parallel.mapreduce.core.actor.message.ReducedMsg;
+import com.parallel.mapreduce.core.message.ReduceMsg;
+import com.parallel.mapreduce.core.message.ReducedMsg;
 
 public class ReduceActor<K, V> extends UntypedActor {
 	

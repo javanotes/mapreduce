@@ -2,20 +2,19 @@ package com.parallel.mapreduce.test;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
+import com.parallel.io.FileHandler;
 import com.parallel.mapreduce.MapReduce;
-import com.parallel.mapreduce.core.FileHandler;
 import com.parallel.mapreduce.core.KeyValue;
-import com.parallel.mapreduce.functions.CustomerMapper;
-import com.parallel.mapreduce.functions.CustomerReducer;
-import com.parallel.mapreduce.functions.VowelCountMapper;
-import com.parallel.mapreduce.functions.VowelCountReducer;
+import com.parallel.mapreduce.test.functions.CustomerMapper;
+import com.parallel.mapreduce.test.functions.CustomerReducer;
+import com.parallel.mapreduce.test.functions.VowelCountMapper;
+import com.parallel.mapreduce.test.functions.VowelCountReducer;
 
 public class MapReduceTest {
 	
@@ -53,7 +52,8 @@ public class MapReduceTest {
 			/*bis = new BufferedReader(new FileReader("C:\\designtools\\workspace\\test\\parallel\\src\\com\\parallel\\mapreduce\\test\\bank-full-init.csv"));
 			String [] heads = bis.readLine().split(";");*/
 			
-			file = new FileHandler("C:\\designtools\\workspace\\test\\parallel\\src\\com\\parallel\\mapreduce\\test\\bank-full.csv", 0, 0);
+			//file = new FileHandler("/home/esutdal/workspace/mapreduce/src/com/parallel/mapreduce/test/bank-full.csv", 0, 0);
+			file = new FileHandler("/home/esutdal/Documents/vm/bank-full.csv", 0, 0);
 			file.loadFile();
 			String [] heads = file.readLine().split(";");
 			
@@ -164,18 +164,16 @@ public class MapReduceTest {
 		try {
 			loadFile();
 			
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.exit(-1);
 		}
 		System.out.println("file loaded ..");
 		Customer c = null;
-		
+		System.out.print("Executing Framework");
 		long start = System.currentTimeMillis();
-		System.out.println("Start data reading ..");
+		//System.out.println("Start data reading ..");
 		while((c = getNextCustomer()) != null){
 			executor.add(c);
 			
@@ -183,10 +181,10 @@ public class MapReduceTest {
 		
 		releaseFile();
 		
-		System.out.println("End data reading....");
-		System.out.println("executing ...");
+		//System.out.println("End data reading....");
+		
 		Collection<KeyValue<String, Result>> result = executor.getResult();
-		System.out.println("Time taken: " + (System.currentTimeMillis() - start));
+		System.out.println("Time taken: " + (System.currentTimeMillis() - start)/1000 + " secs");
 		for(KeyValue<String, Result> each : result){
 			System.out.println("=========== " + each.key + " ============");
 			each.value.print();

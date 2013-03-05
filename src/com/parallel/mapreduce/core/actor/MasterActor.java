@@ -18,13 +18,13 @@ import akka.routing.SmallestMailboxRouter;
 import com.parallel.mapreduce.core.IMapper;
 import com.parallel.mapreduce.core.IReducer;
 import com.parallel.mapreduce.core.KeyValue;
-import com.parallel.mapreduce.core.actor.message.EndProduceMsg;
-import com.parallel.mapreduce.core.actor.message.InputCollectionMsg;
-import com.parallel.mapreduce.core.actor.message.InputDataMsg;
-import com.parallel.mapreduce.core.actor.message.MapMsg;
-import com.parallel.mapreduce.core.actor.message.MappedMsg;
-import com.parallel.mapreduce.core.actor.message.ReduceMsg;
-import com.parallel.mapreduce.core.actor.message.ReducedMsg;
+import com.parallel.mapreduce.core.message.EndProduceMsg;
+import com.parallel.mapreduce.core.message.InputCollectionMsg;
+import com.parallel.mapreduce.core.message.InputDataMsg;
+import com.parallel.mapreduce.core.message.MapMsg;
+import com.parallel.mapreduce.core.message.MappedMsg;
+import com.parallel.mapreduce.core.message.ReduceMsg;
+import com.parallel.mapreduce.core.message.ReducedMsg;
 
 public class MasterActor<X, K, V> extends UntypedActor {
 	
@@ -127,11 +127,11 @@ public class MasterActor<X, K, V> extends UntypedActor {
 		
 	}
 	
-	private boolean stopRecursion(){
+	private boolean isKeysUnique(){
 		Set<K> set = new java.util.HashSet<K>();
 		
 		/*
-		 * It is IMPORTANT that the Key should have equals()/hashCode() implemented accordingly, if it is a composite business object
+		 * It is IMPORTANT that the `Key` should have equals()/hashCode() implemented accordingly, if it is a composite business object.
 		 * The recursion stop condition is evaluated by comparing the keys.
 		 */
 		boolean stop = true;
@@ -191,7 +191,7 @@ public class MasterActor<X, K, V> extends UntypedActor {
 			//end of one pass			
 			if(counter == 0){
 				//check if only distinct keys remain in finalResult
-				if(stopRecursion()){
+				if(isKeysUnique()){
 					//make sure input generation has ended
 					if(inputEnded)
 						//no more messages will be consumed
@@ -220,7 +220,7 @@ public class MasterActor<X, K, V> extends UntypedActor {
 			inputEnded = true;
 			
 			//check if only distinct keys remain in finalResult
-			if(stopRecursion()){
+			if(isKeysUnique()){
 				//no more messages will be consumed
 				stop();
 			}
@@ -250,6 +250,7 @@ public class MasterActor<X, K, V> extends UntypedActor {
 	 */
 	@Override
 	public void postStop(){
+		super.postStop();
 		latch.countDown();
 	}
 				
