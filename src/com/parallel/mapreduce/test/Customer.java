@@ -53,14 +53,19 @@ public class Customer {
 			f = props.get(name);
 		}
 		else{
-			try {
-				
-				f = Customer.class.getDeclaredField(name.equals("default") ? "dflt" : name);
-				props.put(name, f);
-			} catch (SecurityException e) {
-				
-			} catch (NoSuchFieldException e) {
-				System.err.println(e.getMessage());
+			synchronized (props) {
+				if (!props.containsKey(name)) {
+					try {
+
+						f = Customer.class.getDeclaredField(name
+								.equals("default") ? "dflt" : name);
+						props.put(name, f);
+					} catch (SecurityException e) {
+
+					} catch (NoSuchFieldException e) {
+						System.err.println(e.getMessage());
+					}
+				}
 			}
 		}
 		

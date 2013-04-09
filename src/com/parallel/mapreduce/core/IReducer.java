@@ -7,7 +7,7 @@ import java.util.Collection;
  * Multiple threads will act on a single instance of this class. So synchronize instance variables if any accordingly.
  * @author esutdal
  *
- * @param <Y>	result object type
+ *
  * @param <K>	mapped key type
  * @param <V>	mapped value type
  */

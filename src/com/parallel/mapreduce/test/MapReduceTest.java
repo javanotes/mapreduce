@@ -49,11 +49,11 @@ public class MapReduceTest {
     private static void loadFile() throws IOException, FileNotFoundException{
     	try {
     		
-			/*bis = new BufferedReader(new FileReader("C:\\designtools\\workspace\\test\\parallel\\src\\com\\parallel\\mapreduce\\test\\bank-full-init.csv"));
+			/*bis = new BufferedReader(new FileReader("/home/esutdal/workspace/mapreduce/src/com/parallel/mapreduce/test/bank-full.csv"));
 			String [] heads = bis.readLine().split(";");*/
 			
-			//file = new FileHandler("/home/esutdal/workspace/mapreduce/src/com/parallel/mapreduce/test/bank-full.csv", 0, 0);
-			file = new FileHandler("/home/esutdal/Documents/vm/bank-full.csv", 0, 0);
+			
+			file = new FileHandler("/home/esutdal/workspace/mapreduce/src/com/parallel/mapreduce/test/bank-full.csv", 0, 0);
 			file.loadFile();
 			String [] heads = file.readLine().split(";");
 			
@@ -79,6 +79,7 @@ public class MapReduceTest {
 			}
     	}
     }
+    static int cpp = 1;
     private static Customer getNextCustomer(){
     	Customer c = null;
     	String[] heads = null;
@@ -91,12 +92,16 @@ public class MapReduceTest {
 			e.printStackTrace();
 		}
 		
-		if(heads != null){
+		if(heads != null && heads.length == header.size()){
+			cpp++;
 			c = new Customer();
 			for(String head : header){
 				c.set(head, peel(heads[header.indexOf(head)]));
 				
 			}
+		}
+		else{
+			System.err.println(cpp);
 		}
 		
 
@@ -125,16 +130,18 @@ public class MapReduceTest {
 	}
 	
 	
-	private static void linear(List<String> list){
+	private static void linear(List<String> list, boolean block){
 		int a=0,e=0,i=0,o=0,u=0;
 		long stime = System.currentTimeMillis();
 		for(String s : list){
-			/*try {
-				//mimic some blocking
-				Thread.sleep(1);
-			} catch (InterruptedException e1) {
-				
-			}*/
+			if (block) {
+				try {
+					//mimic some blocking
+					Thread.sleep(5);
+				} catch (InterruptedException e1) {
+
+				}
+			}
 			for(char c : s.toCharArray()){
 				switch(c){
 				case 'a': ++a;break;

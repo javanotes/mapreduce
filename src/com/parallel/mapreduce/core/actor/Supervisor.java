@@ -25,12 +25,18 @@ public class Supervisor<X> extends UntypedActor {
 	
 	public Supervisor(){
 		super();
-		worker = getContext().actorOf(new Props(Worker.class).withDispatcher("prio-dispatcher"));
+		worker = getContext().actorOf(new Props(Supervised.class).withDispatcher("prio-dispatcher"));
 	}
 
-	private static class Worker<X> extends UntypedActor{
+	/**
+	 * The "supervised" class
+	 * @author esutdal
+	 *
+	 * @param <Y>
+	 */
+	private class Supervised<Y> extends UntypedActor{
 		
-		private static int foo = 0;
+		private int foo = 0;
 				
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		@Override
@@ -46,7 +52,7 @@ public class Supervisor<X> extends UntypedActor {
 				if(foo++ % 3 == 0){
 					throw new Exception("at 3rds");
 				}
-				System.out.println("Consumed: " + ((PriorityMsg<X>)arg0).getData());
+				System.out.println("Consumed: " + ((PriorityMsg<Y>)arg0).getData());
 			}
 			else if(arg0 instanceof FunctionMessage){
 				((FunctionMessage)arg0).f();
@@ -67,7 +73,7 @@ public class Supervisor<X> extends UntypedActor {
 			if(message.get() instanceof PriorityMsg){
 				
 				@SuppressWarnings("unchecked")
-				PriorityMsg<X> retry = new PriorityMsg<X>(((PriorityMsg<X>)message.get()).getData(), PRIORITY.HI);
+				PriorityMsg<Y> retry = new PriorityMsg<Y>(((PriorityMsg<Y>)message.get()).getData(), PRIORITY.HI);
 				
 				getSelf().tell(retry);
 			}
